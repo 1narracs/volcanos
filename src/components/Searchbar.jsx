@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://sefdb02.qut.edu.au:3001";
 
@@ -13,10 +12,7 @@ function Searchbar() {
     "Connecting to the API server..."
   );
   const [disableSearch, setDisablesearch] = useState(true);
-  const navigate = useNavigate();
-
   const countriesUrl = `${API_URL}/countries`;
-
   const resultsExpr = new RegExp(input, "gi");
 
   const submitHandler = (e) => {
@@ -25,10 +21,10 @@ function Searchbar() {
     console.log(innerResults);
 
     if (innerResults.length > 0) {
-      console.log(input);
+      console.log(input, innerResults);
       console.log("search accepted");
     } else {
-      console.log(input);
+      console.log(input, innerResults);
       console.log("search not accepted");
     }
   };
@@ -57,6 +53,12 @@ function Searchbar() {
       });
   }, []);
 
+  useEffect(() => {
+    setInput(input);
+    console.log(input);
+    setInnerResults(countries.filter((elem) => resultsExpr.test(elem)));
+  }, [input]);
+
   return (
     <FormStyle onSubmit={submitHandler}>
       <div>
@@ -73,7 +75,9 @@ function Searchbar() {
           placeholder={placeholderText}
           onChange={(e) => {
             setInput(e.target.value.replace(/[0-9]/g, ""));
-            setInnerResults(countries.filter((elem) => resultsExpr.test(elem)));
+            setInnerResults(
+              countries.filter((elem, index) => resultsExpr.test(elem))
+            );
           }}
         />
       </div>
