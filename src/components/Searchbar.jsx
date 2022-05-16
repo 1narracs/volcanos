@@ -7,32 +7,30 @@ const API_URL = "http://sefdb02.qut.edu.au:3001";
 
 function Searchbar() {
   const [input, setInput] = useState("");
-  const [formattedInput, setFormattedInput] = useState("");
+  const [innerResults, setInnerResults] = useState([]);
   const [countries, setCountries] = useState([]);
+  const [placeholderText, setPlaceholderText] = useState(
+    "Connecting to the API server..."
+  );
+  const [disableSearch, setDisablesearch] = useState(true);
   const navigate = useNavigate();
 
   const countriesUrl = `${API_URL}/countries`;
 
-  function cleanInput(dirtyInput) {
-    setFormattedInput(dirtyInput.replace(/[0-9]/g, ""));
-  }
+  const resultsExpr = new RegExp(input, "gi");
 
   const submitHandler = (e) => {
     e.preventDefault();
 
-    cleanInput(input);
+    console.log(innerResults);
 
-    if (countries.includes(formattedInput)) {
-      console.log(formattedInput);
+    if (innerResults.length > 0) {
+      console.log(input);
       console.log("search accepted");
     } else {
-      console.log(formattedInput);
+      console.log(input);
       console.log("search not accepted");
     }
-    // if input != what's on list of countries (regex format input properly i.e caps, remove numbers etc)
-    // then say there are no results
-    // else render list of volcanoes matching this term
-    // then send props to the grid component that is just the innerRowData
   };
 
   function CheckError(response) {
@@ -49,6 +47,10 @@ function Searchbar() {
       .then((res) => CheckError(res))
       .then((res) => {
         setCountries(res);
+      })
+      .then(() => {
+        setPlaceholderText("Enter a country...");
+        setDisablesearch(false);
       })
       .catch((e) => {
         console.log(e.message);
@@ -67,7 +69,12 @@ function Searchbar() {
           id="search"
           value={input}
           autoComplete="off"
-          onChange={(e) => setInput(e.target.value)}
+          disabled={disableSearch}
+          placeholder={placeholderText}
+          onChange={(e) => {
+            setInput(e.target.value.replace(/[0-9]/g, ""));
+            setInnerResults(countries.filter((elem) => resultsExpr.test(elem)));
+          }}
         />
       </div>
     </FormStyle>
