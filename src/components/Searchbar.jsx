@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { FaSearch } from "react-icons/fa";
+import { SearchContext } from "../SearchContext";
 
 const API_URL = "http://sefdb02.qut.edu.au:3001";
 
@@ -14,6 +15,8 @@ function Searchbar() {
   const [disableSearch, setDisablesearch] = useState(true);
   const countriesUrl = `${API_URL}/countries`;
   const resultsExpr = new RegExp(input, "gi");
+  const [outerSearch, setOuterSearch] = useContext(SearchContext);
+
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -21,11 +24,12 @@ function Searchbar() {
     console.log(innerResults);
 
     if (innerResults.length > 0) {
-      console.log(input, innerResults);
-      console.log("search accepted");
+      // console.log(input, innerResults);
+      // console.log("search accepted");
+      setOuterSearch(innerResults);
     } else {
-      console.log(input, innerResults);
-      console.log("search not accepted");
+      // console.log(input, innerResults);
+      // console.log("search not accepted");
     }
   };
 
@@ -74,10 +78,10 @@ function Searchbar() {
           disabled={disableSearch}
           placeholder={placeholderText}
           onChange={(e) => {
-            setInput(e.target.value.replace(/[0-9]/g, ""));
-            setInnerResults(
-              countries.filter((elem, index) => resultsExpr.test(elem))
-            );
+            setInput(e.target.value.replace(/\s*[^a-z\s].*$/ig, ""));
+            // setInnerResults(
+            //   countries.filter((elem, index) => resultsExpr.test(elem))
+            // );
           }}
         />
       </div>

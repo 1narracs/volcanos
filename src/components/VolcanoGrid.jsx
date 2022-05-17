@@ -2,11 +2,12 @@ import React from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Container } from "reactstrap";
 import { isElementType } from "@testing-library/user-event/dist/utils";
+import { SearchContext } from "../SearchContext";
 
 const TEST_QUERY = {
   id: 1,
@@ -24,6 +25,8 @@ const TEST_QUERY = {
   population_100km: 4071152,
 };
 
+const API_URL = "http://sefdb02.qut.edu.au:3001";
+
 function VolcanoGrid(props) {
   const [rowData, setRowData] = useState([]);
   const [columns, setColumns] = useState([
@@ -31,7 +34,41 @@ function VolcanoGrid(props) {
     { headerName: "Region", field: "region" },
     { headerName: "Subregion", field: "subregion" },
     { headerName: "Last Erupted", field: "erupted" },
+    { headerName: "id", field: "id" },
   ]);
+  const [outerSearch, setOuterSearch] = useContext(SearchContext);
+
+  const [outerResults, setOuterResults] = useState([]);
+
+  function getVolcanoesByQuery(q) {
+    const volcanoesUrl = `${API_URL}/volcanoes?country=${q}`;
+    return fetch(volcanoesUrl)
+      .then((res) => res.json())
+      .then((res) =>
+        res.map((volcano) => ({
+          id: volcano.id,
+          name: volcano.name,
+          country: volcano.country,
+          region: volcano.region,
+          subregion: volcano.subregion,
+        }))
+      )
+      .then((res) => {
+        setOuterResults([...outerResults, res]);
+        console.log("Outer Results", outerResults);
+      });
+  }
+
+  useEffect(() => {
+    console.log(outerSearch);
+    outerSearch.forEach((country) => {
+      getVolcanoesByQuery(country);
+    });
+  }, [outerSearch]);
+
+  useEffect(() => {
+    setRowData(outerResults);    
+  }, [outerResults]);
 
   const navigate = useNavigate();
 

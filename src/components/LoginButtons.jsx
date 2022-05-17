@@ -20,6 +20,8 @@ function LoginButtons() {
     return (
       <SDiv>
         <SNavbarText>Logged In</SNavbarText>
+        <SNavbarText>•</SNavbarText>
+        <SLink to={"/logout"}>Log Out</SLink>
       </SDiv>
     );
   }
