@@ -20,11 +20,15 @@ function Searchbar() {
   const [toastState, setToastState] = useState(false);
   const [search, setSearch] = useState([]);
   const [outerResults, setOuterResults] = useContext(ResultsContext);
-  const { volcResults, error } = useVolcanoApi(search);
+  const { error } = useVolcanoApi(search);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchToastState, setSearchToastState] = useState(false);
+
   const submitHandler = (e) => {
     e.preventDefault();
 
     console.log("innerResults", innerResults);
+    setSearchTerm(input);
 
     setInput("");
 
@@ -33,8 +37,10 @@ function Searchbar() {
     if (innerResults.length > 0) {
       setSearch(innerResults);
       setToastState(false);
+      setSearchToastState(true);
     } else {
       setToastState(true);
+      setSearchToastState(false);
     }
   };
 
@@ -91,9 +97,12 @@ function Searchbar() {
           }}
         />
       </div>
-      <NoResultsToast isOpen={toastState}>
+      <SearchToast isOpen={toastState}>
         <ToastHeader>No results match your query...</ToastHeader>
-      </NoResultsToast>
+      </SearchToast>
+      <SearchToast isOpen={searchToastState}>
+        <ToastHeader>Results for search term "{searchTerm}"</ToastHeader>
+      </SearchToast>
     </FormStyle>
   );
 }
@@ -130,7 +139,7 @@ const FormStyle = styled.form`
   }
 `;
 
-const NoResultsToast = styled(Toast)`
+const SearchToast = styled(Toast)`
   background-color: #212529;
   color: #f38748;
   border-radius: 1.5rem;
@@ -144,6 +153,5 @@ const NoResultsToast = styled(Toast)`
     color: #f38748;
   }
 `;
-
 
 export default Searchbar;

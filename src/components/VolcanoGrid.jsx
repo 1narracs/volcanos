@@ -8,7 +8,6 @@ import styled from "styled-components";
 import { Container } from "reactstrap";
 import { isElementType } from "@testing-library/user-event/dist/utils";
 import { ResultsContext } from "../ResultsContext";
-import { useVolcanoApi } from "../api";
 
 
 function VolcanoGrid() {
@@ -47,6 +46,7 @@ function VolcanoGrid() {
           rowData={rowData}
           pagination={true}
           paginationPageSize={20}
+          onRowClicked={(row) => navigate(`/volcano?id=${row.data.id}`)}
         />
       </GridDiv>
     </SContainer>

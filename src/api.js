@@ -35,11 +35,9 @@ function getVolcanoesByQuery(q) {
 }
 
 export function useVolcanoApi(search) {
-  const [volcResults, setVolcResults] = useState([]);
   const [error, setError] = useState(null);
   const [outerResults, setOuterResults] = useContext(ResultsContext);
-  const [apiRes, setApiRes] = useState([]);
-
+  
   useEffect(() => {
     if (!search == []) {
       console.log("search received by api.js", search);
@@ -48,7 +46,7 @@ export function useVolcanoApi(search) {
         getVolcanoesByQuery(country)
           .then((results) => {
             console.log("just before setOuterResults", results);
-            setOuterResults(oldRes => [...oldRes, ...results]);
+            setOuterResults((oldRes) => [...oldRes, ...results]);
           })
           .catch((e) => {
             setError(e);
@@ -59,6 +57,5 @@ export function useVolcanoApi(search) {
 
   return {
     error,
-    volcResults,
   };
 }
