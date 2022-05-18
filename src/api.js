@@ -38,18 +38,18 @@ export function useVolcanoApi(search) {
   const [volcResults, setVolcResults] = useState([]);
   const [error, setError] = useState(null);
   const [outerResults, setOuterResults] = useContext(ResultsContext);
+  const [apiRes, setApiRes] = useState([]);
 
   useEffect(() => {
     if (!search == []) {
-      setOuterResults([]);
       console.log("search received by api.js", search);
       search.forEach((country) => {
         console.log("country queried =>", country);
         getVolcanoesByQuery(country)
           .then((results) => {
-            setOuterResults([...outerResults, results]);
+            console.log("just before setOuterResults", results);
+            setOuterResults(oldRes => [...oldRes, ...results]);
           })
-          .then(() => console.log("outerResults post query", outerResults))
           .catch((e) => {
             setError(e);
           });

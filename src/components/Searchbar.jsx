@@ -18,16 +18,17 @@ function Searchbar() {
   const countriesUrl = `${API_URL}/countries`;
   const resultsExpr = new RegExp(input, "gi");
   const [toastState, setToastState] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [search, setSearch] = useState([]);
   const [outerResults, setOuterResults] = useContext(ResultsContext);
-
   const { volcResults, error } = useVolcanoApi(search);
-
   const submitHandler = (e) => {
     e.preventDefault();
 
     console.log("innerResults", innerResults);
+
+    setInput("");
+
+    setOuterResults([]);
 
     if (innerResults.length > 0) {
       setSearch(innerResults);
@@ -91,7 +92,7 @@ function Searchbar() {
         />
       </div>
       <NoResultsToast isOpen={toastState}>
-        <ToastHeader>No results match your query.</ToastHeader>
+        <ToastHeader>No results match your query...</ToastHeader>
       </NoResultsToast>
     </FormStyle>
   );
@@ -132,10 +133,10 @@ const FormStyle = styled.form`
 const NoResultsToast = styled(Toast)`
   background-color: #212529;
   color: #f38748;
-  border-radius: 2rem;
-  padding: 0.3rem;
+  border-radius: 1.5rem;
+  margin: 0.3rem;
   div.toast-header {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-left: auto;
     margin-right: auto;
     max-width: fit-content;
@@ -143,5 +144,6 @@ const NoResultsToast = styled(Toast)`
     color: #f38748;
   }
 `;
+
 
 export default Searchbar;
