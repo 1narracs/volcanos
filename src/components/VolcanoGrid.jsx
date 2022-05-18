@@ -7,75 +7,899 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Container } from "reactstrap";
 import { isElementType } from "@testing-library/user-event/dist/utils";
-import { SearchContext } from "../SearchContext";
+import { ResultsContext } from "../ResultsContext";
+import { useVolcanoApi } from "../api";
 
-const TEST_QUERY = {
-  id: 1,
-  country: "Japan",
-  region: "Japan, Taiwan, Marianas",
-  subregion: "Honshu",
-  last_eruption: "6850 BCE",
-  summit: 641,
-  elevation: 2103,
-  latitude: 34.5,
-  longitude: 131.6,
-  population_5km: 3597,
-  population_10km: 9594,
-  population_30km: 117805,
-  population_100km: 4071152,
-};
-
-const API_URL = "http://sefdb02.qut.edu.au:3001";
-
-function VolcanoGrid(props) {
+const TEST_QUERY = [
+  [
+    {
+      name: "Abu",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 1,
+    },
+    {
+      name: "Aogashima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 16,
+    },
+    {
+      name: "Adatarayama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 30,
+    },
+    {
+      name: "Asamayama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 65,
+    },
+    {
+      name: "Aira",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 68,
+    },
+    {
+      name: "Akagisan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 75,
+    },
+    {
+      name: "Asosan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 76,
+    },
+    {
+      name: "Akan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 78,
+    },
+    {
+      name: "Akandanayama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 81,
+    },
+    {
+      name: "Ata",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 83,
+    },
+    {
+      name: "Akita-Komagatake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 85,
+    },
+    {
+      name: "Akita-Yakeyama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 100,
+    },
+    {
+      name: "Akusekijima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 105,
+    },
+    {
+      name: "Azumayama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 168,
+    },
+    {
+      name: "Doyo Seamount",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 179,
+    },
+    {
+      name: "Bandaisan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 203,
+    },
+    {
+      name: "Chachadake [Tiatia]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 244,
+    },
+    {
+      name: "Berutarubesan [Berutarube]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 265,
+    },
+    {
+      name: "Fujisan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 268,
+    },
+    {
+      name: "Fukue",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 271,
+    },
+    {
+      name: "Fukutoku-Oka-no-Ba",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 279,
+    },
+    {
+      name: "Esan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 283,
+    },
+    {
+      name: "Chirippusan [Chirip]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 310,
+    },
+    {
+      name: "Chokaisan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 314,
+    },
+    {
+      name: "Hachijojima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 370,
+    },
+    {
+      name: "Hachimantai",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 371,
+    },
+    {
+      name: "Hakkodasan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 373,
+    },
+    {
+      name: "Hakoneyama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 374,
+    },
+    {
+      name: "Hakusan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 375,
+    },
+    {
+      name: "Etorofu-Atosanupuri [Atosanupuri]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 394,
+    },
+    {
+      name: "Harunasan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 395,
+    },
+    {
+      name: "Etorofu-Yakeyama [Grozny Group]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 401,
+    },
+    {
+      name: "Hijiori",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 449,
+    },
+    {
+      name: "Hitokappu Volcano Group [Bogatyr Ridge]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 455,
+    },
+    {
+      name: "Hiuchigatake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 458,
+    },
+    {
+      name: "Hokkaido-Komagatake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 466,
+    },
+    {
+      name: "Kikai",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 479,
+    },
+    {
+      name: "Kirishimayama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 485,
+    },
+    {
+      name: "Kita-Bayonnaise",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 496,
+    },
+    {
+      name: "Kita-Fukutokutai",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 498,
+    },
+    {
+      name: "Kita-Ioto",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 501,
+    },
+    {
+      name: "Kozushima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 546,
+    },
+    {
+      name: "Kuchinoerabujima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 567,
+    },
+    {
+      name: "Kuchinoshima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 569,
+    },
+    {
+      name: "Myojinsho",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 570,
+    },
+    {
+      name: "Myokosan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 571,
+    },
+    {
+      name: "Io-Torishima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 577,
+    },
+    {
+      name: "Kujusan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 580,
+    },
+    {
+      name: "Ioto",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 581,
+    },
+    {
+      name: "Nakanoshima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 582,
+    },
+    {
+      name: "Nantaisan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 588,
+    },
+    {
+      name: "Naruko",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 596,
+    },
+    {
+      name: "Kurikomayama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 597,
+    },
+    {
+      name: "Nasudake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 599,
+    },
+    {
+      name: "Kurose Hole",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 600,
+    },
+    {
+      name: "Kusatsu-Shiranesan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 605,
+    },
+    {
+      name: "Kussharo",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 607,
+    },
+    {
+      name: "Kuttara",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 611,
+    },
+    {
+      name: "Iwakisan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 625,
+    },
+    {
+      name: "Iwatesan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 626,
+    },
+    {
+      name: "Izu-Oshima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 657,
+    },
+    {
+      name: "Izu-Tobu",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 660,
+    },
+    {
+      name: "Izu-Torishima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 663,
+    },
+    {
+      name: "Maruyama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 668,
+    },
+    {
+      name: "Niigata-Yakeyama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 673,
+    },
+    {
+      name: "Niijima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 675,
+    },
+    {
+      name: "Mashu",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 677,
+    },
+    {
+      name: "Nikko",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 686,
+    },
+    {
+      name: "Nikko-Shiranesan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 688,
+    },
+    {
+      name: "Niseko",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 703,
+    },
+    {
+      name: "Megata",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 712,
+    },
+    {
+      name: "Nishinoshima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 716,
+    },
+    {
+      name: "Norikuradake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 740,
+    },
+    {
+      name: "Midagahara",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 750,
+    },
+    {
+      name: "Mikurajima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 752,
+    },
+    {
+      name: "Minami-Hiyoshi",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 758,
+    },
+    {
+      name: "Miyakejima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 764,
+    },
+    {
+      name: "Kaikata Seamount",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 766,
+    },
+    {
+      name: "Moekeshiwan [Lvinaya Past]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 768,
+    },
+    {
+      name: "Mokuyo Seamount",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 773,
+    },
+    {
+      name: "Kaitoku Seamount",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 782,
+    },
+    {
+      name: "Numazawa",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 806,
+    },
+    {
+      name: "Odamoisan [Tebenkov]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 824,
+    },
+    {
+      name: "Moyorodake [Medvezhia]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 834,
+    },
+    {
+      name: "Oki-Dogo",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 857,
+    },
+    {
+      name: "Sumisujima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 892,
+    },
+    {
+      name: "Sanbesan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 898,
+    },
+    {
+      name: "Suwanosejima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 911,
+    },
+    {
+      name: "Taisetsuzan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 941,
+    },
+    {
+      name: "Omanago Group",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 942,
+    },
+    {
+      name: "Ontakesan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 944,
+    },
+    {
+      name: "Takaharayama",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 945,
+    },
+    {
+      name: "Oshima-Oshima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 975,
+    },
+    {
+      name: "Osorezan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 983,
+    },
+    {
+      name: "Rakkibetsudake [Demon]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 989,
+    },
+    {
+      name: "Sashiusudake [Baransky]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 992,
+    },
+    {
+      name: "Rausudake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 1013,
+    },
+    {
+      name: "Raususan [Mendeleev]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 1037,
+    },
+    {
+      name: "Tenchozan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 1041,
+    },
+    {
+      name: "Shiga",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 1062,
+    },
+    {
+      name: "Shikotsu",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 1064,
+    },
+    {
+      name: "Shiretoko-Iozan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 1068,
+    },
+    {
+      name: "Rishirizan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 1086,
+    },
+    {
+      name: "Tokachidake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 1123,
+    },
+    {
+      name: "Ruruidake [Smirnov]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 1133,
+    },
+    {
+      name: "Tomariyama [Golovnin]",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 1145,
+    },
+    {
+      name: "Toshima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 1159,
+    },
+    {
+      name: "Towada",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 1164,
+    },
+    {
+      name: "Toya",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 1167,
+    },
+    {
+      name: "Yokoatejima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 1184,
+    },
+    {
+      name: "Yokodake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 1187,
+    },
+    {
+      name: "Yonemaru-Sumiyoshiike",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 1191,
+    },
+    {
+      name: "Yoteizan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Hokkaido",
+      country: "Japan",
+      id: 1193,
+    },
+    {
+      name: "Sofugan",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 1197,
+    },
+    {
+      name: "Yufu-Tsurumi",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 1216,
+    },
+    {
+      name: "Zaozan [Zaosan]",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 1222,
+    },
+    {
+      name: "Unnamed",
+      region: "Kuril Islands",
+      subregion: "Kuril Islands",
+      country: "Japan",
+      id: 1257,
+    },
+    {
+      name: "Unzendake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 1266,
+    },
+    {
+      name: "Submarine Volcano NNE of Iriomotejima",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Ryukyu Islands and Kyushu",
+      country: "Japan",
+      id: 1305,
+    },
+    {
+      name: "Suiyo Seamount",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Izu, Volcano, and Mariana Islands",
+      country: "Japan",
+      id: 1308,
+    },
+    {
+      name: "Washiba-Kumonotaira",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 1317,
+    },
+    {
+      name: "Yakedake",
+      region: "Japan, Taiwan, Marianas",
+      subregion: "Honshu",
+      country: "Japan",
+      id: 1334,
+    },
+  ],
+];
+function VolcanoGrid() {
   const [rowData, setRowData] = useState([]);
   const [columns, setColumns] = useState([
     { headerName: "Volcano Name", field: "name" },
     { headerName: "Region", field: "region" },
     { headerName: "Subregion", field: "subregion" },
-    { headerName: "Last Erupted", field: "erupted" },
+    { headerName: "Country", field: "country" },
     { headerName: "id", field: "id" },
   ]);
-  const [outerSearch, setOuterSearch] = useContext(SearchContext);
-
-  const [outerResults, setOuterResults] = useState([]);
-
-  function getVolcanoesByQuery(q) {
-    const volcanoesUrl = `${API_URL}/volcanoes?country=${q}`;
-    return fetch(volcanoesUrl)
-      .then((res) => res.json())
-      .then((res) =>
-        res.map((volcano) => ({
-          id: volcano.id,
-          name: volcano.name,
-          country: volcano.country,
-          region: volcano.region,
-          subregion: volcano.subregion,
-        }))
-      )
-      .then((res) => {
-        setOuterResults([...outerResults, res]);
-        console.log("Outer Results", outerResults);
-      });
-  }
+  const [outerResults, setOuterResults] = useContext(ResultsContext);
 
   useEffect(() => {
-    console.log(outerSearch);
-    outerSearch.forEach((country) => {
-      getVolcanoesByQuery(country);
-    });
-  }, [outerSearch]);
-
-  useEffect(() => {
-    setRowData(outerResults);    
+    console.log("outerResults in VGc", outerResults);
+    setRowData(outerResults[0]);
   }, [outerResults]);
+
+  // useEffect(() => {
+  //   console.log("Row Data", rowData);
+  //   setRowData(rowData);
+  // }, [rowData]);
 
   const navigate = useNavigate();
 
   return (
     <SContainer>
       <GridDiv className="ag-theme-balham-dark">
-        <AgGridReact columnDefs={columns} rowData={rowData} />
+        <AgGridReact
+          columnDefs={columns}
+          rowData={rowData}
+          pagination={true}
+          paginationPageSize={20}
+        />
       </GridDiv>
     </SContainer>
   );
@@ -87,9 +911,8 @@ const SContainer = styled(Container)`
   align-items: center;
 `;
 const GridDiv = styled.div`
-  min-height: 10rem;
-  height: 20rem;
-  width: 51rem;
+  height: 40rem;
+  width: 78%;
 `;
 const StyledGrid = styled(AgGridReact)``;
 

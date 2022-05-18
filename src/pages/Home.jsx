@@ -2,17 +2,17 @@ import React from "react";
 import Searchbar from "../components/Searchbar";
 import VolcanoGrid from "../components/VolcanoGrid";
 import { useState } from "react";
-import { SearchContext } from "../SearchContext";
+import { ResultsContext } from "../ResultsContext";
 
 function Home() {
   const [outerSearch, setOuterSearch] = useState([]);
 
   return (
     <div>
-      <SearchContext.Provider value={[outerSearch, setOuterSearch]}>
+      <ResultsContext.Provider value={[outerSearch, setOuterSearch]}>
         <Searchbar />
         <VolcanoGrid />
-      </SearchContext.Provider>
+      </ResultsContext.Provider>
     </div>
   );
 }

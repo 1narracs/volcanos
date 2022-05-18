@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import { useState, useEffect, useContext } from "react";
 import { FaSearch } from "react-icons/fa";
-import { SearchContext } from "../SearchContext";
+import { ResultsContext } from "../ResultsContext";
+import { Toast, ToastHeader, ToastBody } from "reactstrap";
+import { useVolcanoApi } from "../api";
 
 const API_URL = "http://sefdb02.qut.edu.au:3001";
 
@@ -15,21 +17,23 @@ function Searchbar() {
   const [disableSearch, setDisablesearch] = useState(true);
   const countriesUrl = `${API_URL}/countries`;
   const resultsExpr = new RegExp(input, "gi");
-  const [outerSearch, setOuterSearch] = useContext(SearchContext);
+  const [toastState, setToastState] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [search, setSearch] = useState([]);
+  const [outerResults, setOuterResults] = useContext(ResultsContext);
 
+  const { volcResults, error } = useVolcanoApi(search);
 
   const submitHandler = (e) => {
     e.preventDefault();
 
-    console.log(innerResults);
+    console.log("innerResults", innerResults);
 
     if (innerResults.length > 0) {
-      // console.log(input, innerResults);
-      // console.log("search accepted");
-      setOuterSearch(innerResults);
+      setSearch(innerResults);
+      setToastState(false);
     } else {
-      // console.log(input, innerResults);
-      // console.log("search not accepted");
+      setToastState(true);
     }
   };
 
@@ -58,9 +62,10 @@ function Searchbar() {
   }, []);
 
   useEffect(() => {
-    setInput(input);
-    console.log(input);
-    setInnerResults(countries.filter((elem) => resultsExpr.test(elem)));
+    if (!input == "") {
+      console.log("input", input);
+      setInnerResults(countries.filter((elem) => resultsExpr.test(elem)));
+    }
   }, [input]);
 
   return (
@@ -78,13 +83,16 @@ function Searchbar() {
           disabled={disableSearch}
           placeholder={placeholderText}
           onChange={(e) => {
-            setInput(e.target.value.replace(/\s*[^a-z\s].*$/ig, ""));
+            setInput(e.target.value.replace(/\s*[^a-z\s].*$/gi, ""));
             // setInnerResults(
             //   countries.filter((elem, index) => resultsExpr.test(elem))
             // );
           }}
         />
       </div>
+      <NoResultsToast isOpen={toastState}>
+        <ToastHeader>No results match your query.</ToastHeader>
+      </NoResultsToast>
     </FormStyle>
   );
 }
@@ -118,6 +126,21 @@ const FormStyle = styled.form`
     color: #212529 !important;
     text-align: center;
     font-weight: 500;
+  }
+`;
+
+const NoResultsToast = styled(Toast)`
+  background-color: #212529;
+  color: #f38748;
+  border-radius: 2rem;
+  padding: 0.3rem;
+  div.toast-header {
+    font-size: 2.5rem;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: fit-content;
+    background-color: #212529 !important;
+    color: #f38748;
   }
 `;
 
