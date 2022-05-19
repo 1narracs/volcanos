@@ -21,10 +21,7 @@ export default function Volcano() {
   const [longitude, setLongitude] = useState(0.0);
 
   function CheckError(response) {
-    if (response.message == `Volcano with id: ${volId} not found.`) {
-      // Ensures a valid ID has been entered
-      navigate(`/`);
-    } else if (!response.error) {
+    if (!response.message) {
       setLatitude(parseFloat(response.latitude));
       setLongitude(parseFloat(response.longitude));
       return response;
@@ -32,6 +29,9 @@ export default function Volcano() {
       // Catch incorrect or expired tokens by logging the user out, forcing them to log in again and refresh their token
       navigate(`/logout`);
       throw Error(response.message);
+    } else if (response.message == `Volcano with id: ${volId} not found.`) {
+      // Ensures a valid ID has been entered
+      navigate(`/`);
     } else {
       throw Error(response.message);
     }
@@ -77,22 +77,23 @@ export default function Volcano() {
     console.log(volcData);
     return (
       <Container>
-        <Title>{volcData.name}</Title>
-        <hr />
-        <Col xs="3">
-          <VolcanoData
-            country={volcData.country}
-            region={volcData.region}
-            subregion={volcData.subregion}
-            lastEruption={volcData.last_eruption}
-            summit={volcData.summit}
-            elevation={volcData.elevation}
-          />
-        </Col>
-
-        <VolcanoMap latitude={latitude} longitude={longitude} />
-        <div>latitude: {volcData.latitude}</div>
-        <div>longitude: {volcData.longitude}</div>
+        <Row>
+          <Title>{volcData.name}</Title>
+          <hr />
+          <Col xs="4">
+            <VolcanoData
+              country={volcData.country}
+              region={volcData.region}
+              subregion={volcData.subregion}
+              lastEruption={volcData.last_eruption}
+              summit={volcData.summit}
+              elevation={volcData.elevation}
+            />
+          </Col>
+          <Col>
+            <VolcanoMap latitude={latitude} longitude={longitude} />
+          </Col>
+        </Row>
       </Container>
     );
   } else {
@@ -103,7 +104,7 @@ export default function Volcano() {
         <Row>
           <Title>{volcData.name}</Title>
           <hr />
-          <Col md="4">
+          <Col xs="4">
             <VolcanoData
               country={volcData.country}
               region={volcData.region}
