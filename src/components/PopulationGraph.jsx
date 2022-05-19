@@ -8,34 +8,47 @@ import Chart from "chart.js/auto";
 function PopulationGraph(props) {
   const ref = useRef();
   const [popData, setPopData] = useState([0, 0, 0, 0]);
+  const [labels, setLabels] = useState(["5km", "10km", "30km", "100km"]);
 
   const dataTemplate = {
-    labels: ["5km", "10km", "30km", "100km"],
+    labels: labels,
     datasets: [
       {
         id: 1,
         label: "Population within",
         data: popData,
-        backgroundColor: [
-            '#B7AC44',
-            '#DF362D',
-            '#FF8300',
-            '#FF4500',
-        ]
+        backgroundColor: ["#B7AC44", "#DF362D", "#FF8300", "#FF4500"],
       },
     ],
   };
 
   useEffect(() => {
     setPopData([props.fiveKm, props.tenKm, props.thirtyKm, props.hundredKm]);
+    setLabels([
+      "5km • " + props.fiveKm,
+      "10km • " + props.tenKm,
+      "30km • " + props.thirtyKm,
+      "100km • " + props.hundredKm,
+    ]);
   }, []);
 
   return (
-    <Container>
-      {props.text}
+    <GraphContainer>
+      <hr />
+      <GraphTitle>Population Data</GraphTitle>
       <Bar ref={ref} datasetIdKey="id" data={dataTemplate} redraw={false} />
-    </Container>
+    </GraphContainer>
   );
 }
+
+const GraphTitle = styled.h2`
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+`;
+
+const GraphContainer = styled(Container)`
+  margin-top: 3rem;
+`;
 
 export default PopulationGraph;

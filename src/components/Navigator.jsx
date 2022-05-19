@@ -36,28 +36,12 @@ function Navigator() {
         </Navi>
         <NavbarToggler onClick={function noRefCheck() {}} />
         <Collapse navbar>
-          <Nav className="me-auto" navbar>
-            <NavItem>
-              <SLink to={"/"}>Full List</SLink>
-            </NavItem>
-            <NavItem>
-              <SLink to={"/"}>Wiki</SLink>
-            </NavItem>
-          </Nav>
+          <Nav className="me-auto" navbar></Nav>
           <LoginButtons />
         </Collapse>
       </Navbar>
     </div>
   );
-
-  // return (
-  //   <Nav>
-  //     <Logo to={"/"}>
-  //       <WiVolcano />
-  //       VolcanoDB
-  //     </Logo>
-  //   </Nav>
-  // );
 }
 
 const Logo = styled(Link)`

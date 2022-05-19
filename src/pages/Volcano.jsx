@@ -1,10 +1,10 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import { Container } from "reactstrap";
+import { Container, Col, Row } from "reactstrap";
+import styled from "styled-components";
 import VolcanoMap from "../components/VolcanoMap";
 import VolcanoData from "../components/VolcanoData";
-
 import PopulationGraph from "../components/PopulationGraph";
 
 const API_URL = "http://sefdb02.qut.edu.au:3001";
@@ -21,7 +21,10 @@ export default function Volcano() {
   const [longitude, setLongitude] = useState(0.0);
 
   function CheckError(response) {
-    if (!response.error) {
+    if (response.message == `Volcano with id: ${volId} not found.`) {
+      // Ensures a valid ID has been entered
+      navigate(`/`);
+    } else if (!response.error) {
       setLatitude(parseFloat(response.latitude));
       setLongitude(parseFloat(response.longitude));
       return response;
@@ -74,15 +77,19 @@ export default function Volcano() {
     console.log(volcData);
     return (
       <Container>
-        <VolcanoData
-          name={volcData.name}
-          country={volcData.country}
-          region={volcData.region}
-          subregion={volcData.subregion}
-          lastEruption={volcData.last_eruption}
-          summit={volcData.summit}
-          elevation={volcData.elevation}
-        />
+        <Title>{volcData.name}</Title>
+        <hr />
+        <Col xs="3">
+          <VolcanoData
+            country={volcData.country}
+            region={volcData.region}
+            subregion={volcData.subregion}
+            lastEruption={volcData.last_eruption}
+            summit={volcData.summit}
+            elevation={volcData.elevation}
+          />
+        </Col>
+
         <VolcanoMap latitude={latitude} longitude={longitude} />
         <div>latitude: {volcData.latitude}</div>
         <div>longitude: {volcData.longitude}</div>
@@ -93,30 +100,37 @@ export default function Volcano() {
     console.log(volcData);
     return (
       <Container>
-        <VolcanoData
-          name={volcData.name}
-          country={volcData.country}
-          region={volcData.region}
-          subregion={volcData.subregion}
-          lastEruption={volcData.last_eruption}
-          summit={volcData.summit}
-          elevation={volcData.elevation}
-        />
-        <VolcanoMap latitude={latitude} longitude={longitude} />
-        <div>latitude: {volcData.latitude}</div>
-        <div>longitude: {volcData.longitude}</div>
+        <Row>
+          <Title>{volcData.name}</Title>
+          <hr />
+          <Col md="4">
+            <VolcanoData
+              country={volcData.country}
+              region={volcData.region}
+              subregion={volcData.subregion}
+              lastEruption={volcData.last_eruption}
+              summit={volcData.summit}
+              elevation={volcData.elevation}
+            />
+          </Col>
+          <Col>
+            <VolcanoMap latitude={latitude} longitude={longitude} />
+          </Col>
+        </Row>
         <PopulationGraph
           text="graph goes here"
           fiveKm={volcData.population_5km}
           tenKm={volcData.population_10km}
           thirtyKm={volcData.population_30km}
           hundredKm={volcData.population_100km}
-        ></PopulationGraph>
-        <div>population_5km: {volcData.population_5km}</div>
-        <div>population_10km: {volcData.population_10km}</div>
-        <div>population_30km: {volcData.population_30km}</div>
-        <div>population_100km: {volcData.population_100km}</div>
+        />
       </Container>
     );
   }
 }
+
+const Title = styled.h1`
+  text-align: center;
+  color: #f38748;
+  margin: 2rem;
+`;

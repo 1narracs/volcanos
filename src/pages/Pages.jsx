@@ -12,7 +12,7 @@ function Pages() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/logout" element={<Logout />} />
-      <Route path="/volcano" element={<Volcano/>} />
+      <Route path="/volcano" element={<Volcano />} />
     </Routes>
   );
 }
