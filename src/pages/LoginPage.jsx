@@ -39,7 +39,7 @@ function LoginPage() {
       .then((res) => CheckError(res))
       .then((res) => {
         localStorage.setItem("token", res.token);
-        setUser("TRUE");
+        setUser(true);
         navigate("/");
       })
       .catch((e) => {

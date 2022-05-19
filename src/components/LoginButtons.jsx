@@ -8,7 +8,7 @@ import { UserContext } from "../UserContext";
 function LoginButtons() {
   const [user, setUser] = useContext(UserContext);
 
-  if (user === "FALSE") {
+  if (user === false) {
     return (
       <SDiv>
         <SLink to={"/login"}>Login</SLink>
@@ -16,7 +16,7 @@ function LoginButtons() {
         <SLink to={"/register"}>Register</SLink>
       </SDiv>
     );
-  } else if (user === "TRUE") {
+  } else if (user === true) {
     return (
       <SDiv>
         <SNavbarText>Logged In</SNavbarText>

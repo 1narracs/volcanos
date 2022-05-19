@@ -19,9 +19,9 @@ function Navigator() {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      setUser("TRUE");
+      setUser(true);
     } else {
-      setUser("FALSE");
+      setUser(false);
     }
   }, []);
 

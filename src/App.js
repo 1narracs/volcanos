@@ -7,7 +7,7 @@ import { UserContext } from "./UserContext";
 import { useState } from "react";
 
 function App() {
-  const [user, setUser] = useState("FALSE");
+  const [user, setUser] = useState(false);
 
   return (
     <div className="App">

@@ -27,7 +27,6 @@ function Searchbar() {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    console.log("innerResults", innerResults);
     setSearchTerm(input);
 
     setInput("");
@@ -70,7 +69,6 @@ function Searchbar() {
 
   useEffect(() => {
     if (!input == "") {
-      console.log("input", input);
       setInnerResults(countries.filter((elem) => resultsExpr.test(elem)));
     }
   }, [input]);
@@ -91,9 +89,6 @@ function Searchbar() {
           placeholder={placeholderText}
           onChange={(e) => {
             setInput(e.target.value.replace(/\s*[^a-z\s].*$/gi, ""));
-            // setInnerResults(
-            //   countries.filter((elem, index) => resultsExpr.test(elem))
-            // );
           }}
         />
       </div>
