@@ -24,7 +24,6 @@ export function useVolcanoApi(search) {
 
   useEffect(() => {
     if (!search == []) {
-      console.log("search received by api.js", search);
       search.forEach((country) => {
         getVolcanoesByQuery(country)
           .then((results) => {
